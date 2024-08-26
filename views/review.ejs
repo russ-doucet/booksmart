@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap NavBar CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/styles/style.css">
+
+    <title>Write a Review</title>
+</head>
+<body>
+    <header class="p-3 mb-3 border-bottom">
+        <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+              <img id="book-logo" src="/assets/logo.svg" alt="Open book logo">
+              <h2 class="title">Booksmart.</h1>
+            </a>
+    
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+              <li><a href="/books" class="nav-link px-2 link-body-emphasis">My Reviews</a></li>
+              <li><a href="about.ejs" class="nav-link px-2 link-secondary">About</a></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+
+      <div class="main-container">
+        <div class="book-card edit-review-card">
+          <% if(locals.selectedBook) { %>
+            <img src="//covers.openlibrary.org/b/id/<%= selectedBook.cover_id %>-M.jpg">
+            <h4><%= selectedBook.title %> </h4>
+            <p> By <%= selectedBook.author %> </p>
+          <% } else { %>
+            <p>  Cover Image Not Found </p>
+            <h4><%= selectedBook.title %> </h4>
+            <p> By <%= selectedBook.author %> </p>
+          <% } %>
+        </div>
+        <% if(!locals.bookToEdit) { %>
+          <form class="review-form" action="/create" method="POST">
+            <h3 id="review-title">Write a Review</h3>
+            <input type="text" placeholder="Title..." class="form-control" id="review-title-input" name="reviewTitle" required>
+            <input type="text" placeholder="What did you think..." class="form-control" id="review-body-input" name="reviewBody" required>
+            <input type="submit" class="btn btn-dark" id="submit-review" value="Post Review">
+          </form>
+        <% } else { %>
+          <form class="review-form" action="/post-edit" method="POST">
+            <h3 id="review-title">Write a Review</h3>
+            <input type="text" name="editReviewTitle" value="<%= bookToEdit.review_name %>" class="form-control" id="review-title-input"  required>
+            <input type="text" name="editReviewBody" value="<%= bookToEdit.review_body %>" class="form-control" id="review-body-input" required>
+            <input type="hidden" name="hiddenID" value="<%= selectedBook.cover_id%>">
+            <input type="submit" class="btn btn-dark" id="submit-review" value="Update Review">
+          </form>
+          <% } %>
+      </div>
+</body>
+</html>

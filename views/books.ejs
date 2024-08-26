@@ -1,0 +1,66 @@
+<!DOCTYPE html
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap NavBar CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/styles/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <header class="p-3 mb-3 border-bottom">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+          <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+            <img id="book-logo" src="/assets/logo.svg" alt="Open book logo">
+            <h2 class="title">Booksmart.</h1>
+          </a>
+    
+          <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            <li><a href="/books" class="nav-link px-2 link-body-emphasis">My Reviews</a></li>
+            <li><a href="about.ejs" class="nav-link px-2 link-secondary">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="main-review-container">
+      <% if(locals.reviewed_books.length === 0) { %>
+        <h1 id="empty-books-msg"> You have not reviewed any books yet, get reading! </h1>
+      <% } %>
+      <% if(!locals.error) {
+        reviewed_books.forEach((book) => {%>
+          <div class="review-container">
+            <div class="card review-card" style="width: 18rem;">
+              <img src="//covers.openlibrary.org/b/id/<%= book.cover_id %>-M.jpg" class="review-card-img" alt="<%= book.title%> cover">
+              <div class="review-card-body">
+                <h5 class="card-title"><%= book.title %></h5>
+                <p class="card-text"> By <%= book.author %></p>
+              </div>
+            </div>
+            <div class="review-body-container">
+              <h4 id="review-name"> <%= book.review_name %> </h4>
+              <p class="review-content" id="review-body"> <%= book.review_body %> </p>
+              <div class="review-btn-container">
+                <form action="/edit" method="post">
+                  <input type="hidden" name="selected_book_edit" value="<%= JSON.stringify(book) %>">
+                  <input type="submit" class="btn btn-warning" id="edit-btn" value="Edit">
+                </form>
+                <form action="/delete" method="post">
+                  <input type="hidden" name="selected_book_del" value="<%= JSON.stringify(book) %>">
+                  <input type="submit" class="btn btn-danger" id="del-btn" value="Delete">
+                </form>
+              </div>
+            </div>
+          </div>
+      <%  });
+        }else {%>
+          <h1><%= error.message %> </h1>
+        <% } %>
+    </div>
+
+      
+</body>
+</html>
