@@ -78,29 +78,30 @@ app.post("/review", (req, res) => {
 });
 
 app.post("/create", async (req, res) => {
+    // Extracting the review title and body from the submitted form
     const postTitle = req.body["reviewTitle"];
     const postBody = req.body["reviewBody"];
     try{
+        // Add the new book into the books table
         await db.query("INSERT INTO books (title, author, cover_id) VALUES ($1, $2, $3)",
         [currentBook.title, currentBook.author, currentBook.cover_id]);
-        // const posted_id = await db.query("SELECT id FROM books");
-        // const len = posted_id.rows.length;
-        // //console.log(posted_id.rows[len]);
+
+        // Adding the newly created review of the recently added book to the reviews table
         await db.query("INSERT INTO reviews (review_name, review_body, book_id) VALUES ($1, $2, $3)",
             [postTitle, postBody, bookID++]);
-        // console.log(inserted_book);
-        // console.log('id:', inserted_book.id); 
-        //console.log(posted_books);
-        //res.redirect("books.ejs", { reviewed_books: posted_books.rows});
+
         res.redirect("/books");
     } catch(err){
         console.log(err.message);
     }
 });
 
+// Rendering the 'My reviews page'
 app.get("/books", async (req, res) => {
     try{
+        // Retrieve all books and their respective reviews
         const posted_books = await db.query("SELECT * FROM reviews INNER JOIN books ON reviews.book_id = books.id");
+        // Render the 'My Reviews' page with the array of all books and their reviews
         res.render("books.ejs", {
             reviewed_books: posted_books.rows,
         });
@@ -115,8 +116,10 @@ app.get("/books", async (req, res) => {
 });
 
 app.post("/edit", (req, res) => {
+    // Retrieve the book object the user selected to edit
     const editBook = JSON.parse(req.body.selected_book_edit); 
 
+    // Render the review page with the selected books information
     res.render("review.ejs", {
         selectedBook: editBook, bookToEdit: editBook
     });
@@ -124,10 +127,13 @@ app.post("/edit", (req, res) => {
 
 app.post("/post-edit", async (req, res) => {
     try{
+        // Retrieving the id of the book who's review the user just edited
         const current_book_id = req.body.hiddenID;
+        // Get a list of all of the currently reviewed books on the website
         const posted_books = await db.query("SELECT * FROM reviews INNER JOIN books ON reviews.book_id = books.id");
         console.log(current_book_id);
         
+        // Find the book who's review we want to update
         const book_to_edit = posted_books.rows.find((book) => {
             return book.cover_id == current_book_id;
         });
@@ -135,10 +141,12 @@ app.post("/post-edit", async (req, res) => {
         console.log(posted_books.rows);
         console.log(book_to_edit);
 
+        // Update the book's review in the database
         await db.query("UPDATE reviews SET review_name = ($1), review_body = ($2) WHERE book_id = ($3)",
             [req.body.editReviewTitle, req.body.editReviewBody, book_to_edit.id]
         )
 
+        // Send the user back to the 'My Reviews' page after updating the books review
         res.redirect("/books");
     }catch(err){
         console.log(err.message);
@@ -146,16 +154,19 @@ app.post("/post-edit", async (req, res) => {
 });
 
 app.post("/delete", async (req, res) => {
+    // Retrieve the book selected by the user to be deleted
     const book_to_delete = JSON.parse(req.body.selected_book_del);
-    const books_table = await db.query("SELECT * FROM books");
     console.log(book_to_delete);
 
     try{
+        // Delete the book object and its associated review from both the books and review table
         await db.query("DELETE FROM reviews WHERE book_id=($1)",
             [book_to_delete.id]
         )
         await db.query("DELETE FROM books WHERE id=($1)",
             [book_to_delete.id]);
+
+        // Send the user back to the 'My reviews page'
         res.redirect("/books");
     }catch(err){
         console.log(err.message);
