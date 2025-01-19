@@ -6,4 +6,4 @@ Booksmart was built with Node, Express Server, Boostrap, PostgreSQL, HTML/CSS an
 Run the Project:
  - Clone the repo onto your machine and open the project in your IDE
  - In command-line/temirnal navigate to the project and run: npm i to install all dependencies
- - The Project requires a PostgreSQL database to story information regarding search results and book reviews
+ - The Project requires a PostgreSQL database to store information regarding search results and book reviews
